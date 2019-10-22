@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="上一步"
+        android:id="@+id/before"/>
+    <item android:title="重新开始"
+        android:id="@+id/restart"/>
+</menu>
