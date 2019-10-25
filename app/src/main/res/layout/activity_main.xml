@@ -17,7 +17,9 @@
         android:textColor="#E91E63"
         android:textSize="30sp"
         android:textStyle="bold|italic"
-        app:fontFamily="serif" />
+        app:fontFamily="serif"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="30dp"/>
 
     <Button
         android:id="@+id/new_game"
