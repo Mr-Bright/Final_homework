@@ -1,10 +1,5 @@
 package com.example.final_homework;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,14 +7,19 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -36,6 +36,7 @@ public class game extends AppCompatActivity {
     ImageButton[] pos;
     Drawable[] icon;
     List history;
+    Handler handler;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
 
@@ -371,7 +372,7 @@ public class game extends AppCompatActivity {
             record.edit().clear().commit();
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("notice")
-                    .setMessage("Congratulation!\n是否上传成绩？")
+                    .setMessage("Congratulation!\n\n是否上传成绩？")
                     .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -429,13 +430,36 @@ public class game extends AppCompatActivity {
         }
         history.add(str);
 
-        doubleCount = new DoubleCount(str);
-        best = doubleCount.getBest();
+        //doubleCount = new DoubleCount(str);
+        //best = doubleCount.getBest();
+
+        final String finalStr = str;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DoubleCount dou = new DoubleCount(finalStr);
+                int best_dou = dou.getBest();
+                Message msg = handler.obtainMessage(3);
+                msg.obj = best_dou;
+                handler.sendMessage(msg);
+            }
+        }).start();
+
+        handler = new Handler(){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                if(msg.what==3) {
+                    best = (int)msg.obj;
+                    TextView best_count = (TextView)findViewById(R.id.bestcount);
+                    best_count.setText("最佳步数："+best);
+                }
+                super.handleMessage(msg);
+            }
+        };
 
         TextView step_count = (TextView)findViewById(R.id.count);
-        TextView best_count = (TextView)findViewById(R.id.bestcount);
         step_count.setText("当前步数："+count);
-        best_count.setText("最佳步数："+best);
+
 
         for (int i = 0; i < 9; i++) {
             if (a[i] != 9) {
